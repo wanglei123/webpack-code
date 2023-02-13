@@ -1,5 +1,6 @@
 import sum from './js'
-
+// 字体文件
+import './css/iconfont.css'
 import './css/index.css'
 
 import './less/index.less'

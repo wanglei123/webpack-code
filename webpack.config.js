@@ -1,3 +1,11 @@
+/*
+ * @Author       : wanglei
+ * @Date         : 2023-02-13 08:40:52
+ * @LastEditors  : wanglei
+ * @LastEditTime : 2023-02-13 09:05:34
+ * @FilePath     : /webpack-code/webpack.config.js
+ * @description  : 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
+ */
 const path = require('path')
 
 module.exports = {
@@ -67,7 +75,15 @@ module.exports = {
                 // [hash:10] hash值只取前10位
                 filename: 'static/images/[hash:10][ext][query]'
               }
-              }
+              },
+              // 处理字体资源，也可以处理其它音频、视频资源
+              {
+                test: /\.(ttf|woff2?|map3|map4|avi)$/,
+                type: "asset/resource", // 文件不会转base64
+                generator: {
+                  filename: 'static/fonts/[hash:10][ext][query]'
+                }
+              },
         ]
     },
     plugins: [],
