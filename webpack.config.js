@@ -7,6 +7,8 @@
  * @description  : 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
  */
 const path = require('path')
+const ESLintPlugin = require('eslint-webpack-plugin');
+const HtmlWebpackPlugin = require('html-webpack-plugin');
 
 module.exports = {
     entry: './src/main.js',
@@ -84,9 +86,28 @@ module.exports = {
                   filename: 'static/fonts/[hash:10][ext][query]'
                 }
               },
+              {
+                test: /\.js$/,
+                exclude: /node_modules/, // 排除node_modules 文件夹
+                use: {
+                  loader: 'babel-loader',
+                  // 配置可以写在babel.config.js里
+                  // options: {
+                  //   presets: ['@babel/preset-env']
+                  // }
+                }
+              }
         ]
     },
-    plugins: [],
+    plugins: [
+      new ESLintPlugin({
+        // eslint检测的范围
+        context: path.resolve(__dirname, 'src')
+      }),
+      new HtmlWebpackPlugin({
+        template: path.resolve(__dirname, 'public/index.html')
+      })
+    ],
     mode: 'development',
 
 }
