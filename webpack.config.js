@@ -4,8 +4,9 @@ module.exports = {
     entry: './src/main.js',
     output: {
         // path nodejs变量，代表当前文件的文件夹目录
-        path: path.resolve(__dirname, 'dist'),
-        filename: 'my-first-bundle.js' // 打包之后的文件名
+        path: path.resolve(__dirname, 'dist'), // 所有文件的打包目录
+        filename: 'static/js/my-first-bundle.js', // 打包之后的文件名，入口文件打包输出的文件名
+        clean: true // 每次打包前，清空打包目录，将path目录清空
     },
     module: {
         rules: [
@@ -52,6 +53,21 @@ module.exports = {
                   'stylus-loader',
                 ]
               },
+              {
+                test: /\.(png|jie?g|git|webp|svg)$/,
+                type: 'asset',
+                parser: {
+                // 小于4kb的图片，转成base64字符串
+                 dataUrlCondition: {
+                   maxSize: 4 * 1024 // 4kb
+                 }
+               },
+               // 图片路径输出的目录
+               generator: {
+                // [hash:10] hash值只取前10位
+                filename: 'static/images/[hash:10][ext][query]'
+              }
+              }
         ]
     },
     plugins: [],
