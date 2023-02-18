@@ -2,7 +2,7 @@
  * @Author       : wanglei
  * @Date         : 2023-02-13 08:40:52
  * @LastEditors  : wanglei
- * @LastEditTime : 2023-02-13 09:05:34
+ * @LastEditTime : 2023-02-18 22:09:51
  * @FilePath     : /webpack-code/webpack.config.js
  * @description  : 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
  */
@@ -13,7 +13,7 @@ module.exports = {
     output: {
         // path nodejs变量，代表当前文件的文件夹目录
         path: path.resolve(__dirname, 'dist'),
-        filename: 'my-first-bundle.js', // 打包之后的文件名
+        filename: 'my-first-bundle.js', // 打包之后的文件名,测试提交
         clean: true
     },
     module: {
