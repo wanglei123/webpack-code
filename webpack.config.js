@@ -2,19 +2,21 @@
  * @Author       : wanglei
  * @Date         : 2023-02-13 08:40:52
  * @LastEditors  : wanglei
- * @LastEditTime : 2023-02-18 22:09:51
+ * @LastEditTime : 2023-02-18 22:12:12
  * @FilePath     : /webpack-code/webpack.config.js
  * @description  : 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
  */
 const path = require('path')
+const ESLintPlugin = require('eslint-webpack-plugin');
+const HtmlWebpackPlugin = require('html-webpack-plugin');
 
 module.exports = {
     entry: './src/main.js',
     output: {
         // path nodejs变量，代表当前文件的文件夹目录
-        path: path.resolve(__dirname, 'dist'),
-        filename: 'my-first-bundle.js', // 打包之后的文件名,测试提交
-        clean: true
+        path: path.resolve(__dirname, 'dist'), // 所有文件的打包目录
+        filename: 'static/js/my-first-bundle.js', // 打包之后的文件名，入口文件打包输出的文件名
+        clean: true // 每次打包前，清空打包目录，将path目录清空
     },
     module: {
         rules: [
@@ -61,6 +63,21 @@ module.exports = {
                   'stylus-loader',
                 ]
               },
+              {
+                test: /\.(png|jie?g|git|webp|svg)$/,
+                type: 'asset',
+                parser: {
+                // 小于4kb的图片，转成base64字符串
+                 dataUrlCondition: {
+                   maxSize: 4 * 1024 // 4kb
+                 }
+               },
+               // 图片路径输出的目录
+               generator: {
+                // [hash:10] hash值只取前10位
+                filename: 'static/images/[hash:10][ext][query]'
+              }
+              },
               // 处理字体资源，也可以处理其它音频、视频资源
               {
                 test: /\.(ttf|woff2?|map3|map4|avi)$/,
@@ -69,9 +86,35 @@ module.exports = {
                   filename: 'static/fonts/[hash:10][ext][query]'
                 }
               },
+              {
+                test: /\.js$/,
+                exclude: /node_modules/, // 排除node_modules 文件夹
+                use: {
+                  loader: 'babel-loader',
+                  // 配置可以写在babel.config.js里
+                  // options: {
+                  //   presets: ['@babel/preset-env']
+                  // }
+                }
+              }
         ]
     },
-    plugins: [],
+    plugins: [
+      new ESLintPlugin({
+        // eslint检测的范围
+        context: path.resolve(__dirname, 'src')
+      }),
+      // build时，用这个template进行build
+      new HtmlWebpackPlugin({
+        template: path.resolve(__dirname, 'public/index.html')
+      })
+    ],
+    // 开发服务器没有任何输出资源，是在内存中编译打包的
+    devServer: {
+      host: 'localhost',
+      port: 9000,
+      open: true
+    },
     mode: 'development',
 
 }
