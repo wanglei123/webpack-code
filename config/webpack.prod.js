@@ -19,14 +19,30 @@ module.exports = {
         filename: 'static/js/my-first-bundle.js', // 打包之后的文件名，入口文件打包输出的文件名
         clean: true // 每次打包前，清空打包目录，将path目录清空
     },
+    // 安装postcss npm install postcss-loader postcss postcss-preset-env -D
     module: {
         rules: [
             {
                 test: /\.css$/, // 检测.css文件
                 // use的执行顺序，是从右到左，或者从下到上。
                 use: [
-                    MiniCssExtractPlugin.loader,  // 生成单独的css 文件
-                    'css-loader' // 将css资源编译成commonjs模块到js文件中
+                    MiniCssExtractPlugin.loader,  // 生成单独的css 文件,并以link标签的形式，生成在html中
+                    'css-loader', // 将css资源编译成commonjs模块到js文件中
+                    {
+                      loader: 'postcss-loader',
+                      options: {
+                        postcssOptions: {
+                          plugins: [
+                            [
+                              'postcss-preset-env',
+                              {
+                                // 其他选项
+                              },
+                            ],
+                          ],
+                        },
+                      },
+                    },
                 ] 
             },
             {
@@ -41,16 +57,48 @@ module.exports = {
                   // compiles Less to CSS
                   MiniCssExtractPlugin.loader,
                   'css-loader',
+                  // 写在css-loader之后，less/sass-loader之前
+                  // 写成对象，可以配置这个loader
+                  {
+                    loader: 'postcss-loader',
+                    options: {
+                      postcssOptions: {
+                        plugins: [
+                          [
+                            'postcss-preset-env',
+                            {
+                              // 其他选项
+                            },
+                          ],
+                        ],
+                      },
+                    },
+                  },
                   'less-loader',
                 ],
               },
               {
                 test: /\.s[ac]ss$/i,
                 use: [
-                  // 将 JS 字符串生成为 style 节点
+                  
                   MiniCssExtractPlugin.loader,
                   // 将 CSS 转化成 CommonJS 模块
                   'css-loader',
+                  {
+                    loader: 'postcss-loader',
+                    options: {
+                      postcssOptions: {
+                        plugins: [
+                          [
+                            'postcss-preset-env',
+                            {
+                              // 其他选项
+                            },
+                          ],
+                        ],
+                      },
+                    },
+                  },
                   // 将 Sass 编译成 CSS
                   'sass-loader',
                 ],
@@ -61,6 +109,21 @@ module.exports = {
                 use: [
                   MiniCssExtractPlugin.loader,
                   'css-loader',
+                  {
+                    loader: 'postcss-loader',
+                    options: {
+                      postcssOptions: {
+                        plugins: [
+                          [
+                            'postcss-preset-env',
+                            {
+                              // 其他选项
+                            },
+                          ],
+                        ],
+                      },
+                    },
+                  },
                   'stylus-loader',
                 ]
               },
