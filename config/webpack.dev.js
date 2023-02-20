@@ -9,14 +9,16 @@
 const path = require('path')
 const ESLintPlugin = require('eslint-webpack-plugin');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
+const MiniCssExtractPlugin = require("mini-css-extract-plugin");
+
 
 module.exports = {
-    entry: './src/main.js',
+    entry: './src/main.js', // 这个不用改，还是会从要从根目录去找入口文件
     output: {
         // path nodejs变量，代表当前文件的文件夹目录
-        path: path.resolve(__dirname, 'dist'), // 所有文件的打包目录
+        path: undefined, // 所有文件的打包目录，这个放到config文件夹中之后，需要加上../, 开发环境可以不用定义
         filename: 'static/js/my-first-bundle.js', // 打包之后的文件名，入口文件打包输出的文件名
-        clean: true // 每次打包前，清空打包目录，将path目录清空
+        // clean: true // 每次打包前，清空打包目录，将path目录清空
     },
     module: {
         rules: [
@@ -24,7 +26,10 @@ module.exports = {
                 test: /\.css$/, // 检测.css文件
                 // use的执行顺序，是从右到左，或者从下到上。
                 use: [
-                    'style-loader', // 将js中css显示成style标签的形式，让页面样式生效
+                    MiniCssExtractPlugin.loader,
+                    // 将js中css显示成style标签的形式，让页面样式生效
+                    // 这里把style-loader，替换成 MiniCssExtractPlugin.loader
+                    // 'style-loader', 
                     'css-loader' // 将css资源编译成commonjs模块到js文件中
                 ] 
             },
@@ -38,7 +43,7 @@ module.exports = {
                 // ]
                 use: [
                   // compiles Less to CSS
-                  'style-loader',
+                  MiniCssExtractPlugin.loader,
                   'css-loader',
                   'less-loader',
                 ],
@@ -47,7 +52,7 @@ module.exports = {
                 test: /\.s[ac]ss$/i,
                 use: [
                   // 将 JS 字符串生成为 style 节点
-                  'style-loader',
+                  MiniCssExtractPlugin.loader,
                   // 将 CSS 转化成 CommonJS 模块
                   'css-loader',
                   // 将 Sass 编译成 CSS
@@ -58,7 +63,7 @@ module.exports = {
                 test: /\.styl$/,
                  // loader: "stylus-loader", // 将 Stylus 文件编译为 CSS
                 use: [
-                  'style-loader',
+                  MiniCssExtractPlugin.loader,
                   'css-loader',
                   'stylus-loader',
                 ]
@@ -102,11 +107,14 @@ module.exports = {
     plugins: [
       new ESLintPlugin({
         // eslint检测的范围
-        context: path.resolve(__dirname, 'src')
+        context: path.resolve(__dirname, '../src')
       }),
       // build时，用这个template进行build
       new HtmlWebpackPlugin({
-        template: path.resolve(__dirname, 'public/index.html')
+        template: path.resolve(__dirname, '../public/index.html')
+      }),
+      new MiniCssExtractPlugin({
+        filename: 'static/css/main.css'
       })
     ],
     // 开发服务器没有任何输出资源，是在内存中编译打包的
