@@ -10,6 +10,31 @@ const path = require('path')
 const ESLintPlugin = require('eslint-webpack-plugin');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const MiniCssExtractPlugin = require("mini-css-extract-plugin");
+const CssMinimizerPlugin = require("css-minimizer-webpack-plugin");
+
+
+function getStyleLoader(pre){
+  return [
+    MiniCssExtractPlugin.loader,  // 生成单独的css 文件,并以link标签的形式，生成在html中
+    'css-loader', // 将css资源编译成commonjs模块到js文件中
+    {
+      loader: 'postcss-loader',
+      options: {
+        postcssOptions: {
+          plugins: [
+            [
+              'postcss-preset-env',
+              {
+                // 其他选项
+              },
+            ],
+          ],
+        },
+      },
+    },
+    pre
+].filter(Boolean)
+}
 
 module.exports = {
     entry: './src/main.js',
@@ -25,25 +50,7 @@ module.exports = {
             {
                 test: /\.css$/, // 检测.css文件
                 // use的执行顺序，是从右到左，或者从下到上。
-                use: [
-                    MiniCssExtractPlugin.loader,  // 生成单独的css 文件,并以link标签的形式，生成在html中
-                    'css-loader', // 将css资源编译成commonjs模块到js文件中
-                    {
-                      loader: 'postcss-loader',
-                      options: {
-                        postcssOptions: {
-                          plugins: [
-                            [
-                              'postcss-preset-env',
-                              {
-                                // 其他选项
-                              },
-                            ],
-                          ],
-                        },
-                      },
-                    },
-                ] 
+                use: getStyleLoader()
             },
             {
                 test: /\.less$/i,
@@ -53,79 +60,16 @@ module.exports = {
                 //         loader: 'style-loader',
                 //       },
                 // ]
-                use: [
-                  // compiles Less to CSS
-                  MiniCssExtractPlugin.loader,
-                  'css-loader',
-                  // 写在css-loader之后，less/sass-loader之前
-                  // 写成对象，可以配置这个loader
-                  {
-                    loader: 'postcss-loader',
-                    options: {
-                      postcssOptions: {
-                        plugins: [
-                          [
-                            'postcss-preset-env',
-                            {
-                              // 其他选项
-                            },
-                          ],
-                        ],
-                      },
-                    },
-                  },
-                  'less-loader',
-                ],
+                use: getStyleLoader('less-loader'),
               },
               {
                 test: /\.s[ac]ss$/i,
-                use: [
-                  
-                  MiniCssExtractPlugin.loader,
-                  // 将 CSS 转化成 CommonJS 模块
-                  'css-loader',
-                  {
-                    loader: 'postcss-loader',
-                    options: {
-                      postcssOptions: {
-                        plugins: [
-                          [
-                            'postcss-preset-env',
-                            {
-                              // 其他选项
-                            },
-                          ],
-                        ],
-                      },
-                    },
-                  },
-                  // 将 Sass 编译成 CSS
-                  'sass-loader',
-                ],
+                use: getStyleLoader('sass-loader'),
               },
               {
                 test: /\.styl$/,
                  // loader: "stylus-loader", // 将 Stylus 文件编译为 CSS
-                use: [
-                  MiniCssExtractPlugin.loader,
-                  'css-loader',
-                  {
-                    loader: 'postcss-loader',
-                    options: {
-                      postcssOptions: {
-                        plugins: [
-                          [
-                            'postcss-preset-env',
-                            {
-                              // 其他选项
-                            },
-                          ],
-                        ],
-                      },
-                    },
-                  },
-                  'stylus-loader',
-                ]
+                use: getStyleLoader('stylus-loader')
               },
               {
                 test: /\.(png|jie?g|git|webp|svg)$/,
@@ -174,7 +118,9 @@ module.exports = {
       }),
       new MiniCssExtractPlugin({
         filename: 'static/css/main.css'
-      })
+      }),
+      // 压缩css
+      new CssMinimizerPlugin()
     ],
 
     mode: 'production',
