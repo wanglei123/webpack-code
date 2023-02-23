@@ -6,11 +6,13 @@
  * @FilePath     : /webpack-code/webpack.config.js
  * @description  : 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
  */
+const os = require('os')
 const path = require('path')
 const ESLintPlugin = require('eslint-webpack-plugin');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 const CssMinimizerPlugin = require("css-minimizer-webpack-plugin");
+const TerserWebpackPlugin = require('terser-webpack-plugin')
 
 
 function getStyleLoader(pre){
@@ -35,6 +37,8 @@ function getStyleLoader(pre){
     pre
 ].filter(Boolean)
 }
+
+const threads = os.cpus().length // 先判断当前电脑cpu的核数， 我们能启动的最大进程数据就是cpu的核数
 
 module.exports = {
     entry: './src/main.js',
@@ -97,20 +101,33 @@ module.exports = {
               {
                 test: /\.js$/,
                 exclude: /node_modules/, // 排除node_modules 文件夹
-                use: {
+                use: [
+                  {
+                  loader: 'thread-loader', // 开启多进程
+                  options: {
+                    workds: threads // 进程数量
+                  }
+
+                  },
+                  {
                   loader: 'babel-loader',
                   // 配置可以写在babel.config.js里
-                  // options: {
-                  //   presets: ['@babel/preset-env']
-                  // }
-                }
+                  options: {
+                    // presets: ['@babel/preset-env']
+                    cacheDirectory: true, // 开启babel缓存
+                    cacheCompression: false // 关闭缓存的压缩
+                  }
+                }]
               }
         ]
     },
     plugins: [
       new ESLintPlugin({
         // eslint检测的范围
-        context: path.resolve(__dirname, '../src')
+        context: path.resolve(__dirname, '../src'),
+        cache: true, // 开启缓存
+        cacheLocation: path.resolve(__dirname, '../node_modules/.cache/eslintcache'),// 配置缓存的目录
+        threads  // 开启多进程的数量
       }),
       // build时，用这个template进行build
       new HtmlWebpackPlugin({
@@ -119,9 +136,18 @@ module.exports = {
       new MiniCssExtractPlugin({
         filename: 'static/css/main.css'
       }),
-      // 压缩css
-      new CssMinimizerPlugin()
+
     ],
+    optimization: {
+      minimizer: [
+      // 压缩css
+      new CssMinimizerPlugin(),
+      new TerserWebpackPlugin({
+        parallel: threads // // 开启多进程的数量
+      })
+      ],
+      
+    },
 
     mode: 'production',
 

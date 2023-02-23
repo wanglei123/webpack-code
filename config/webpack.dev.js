@@ -93,13 +93,15 @@ module.exports = {
               },
               {
                 test: /\.js$/,
-                exclude: /node_modules/, // 排除node_modules 文件夹
+                // exclude: /node_modules/, // 排除node_modules 文件夹，其他文件都处理
+                include: path.resolve(__dirname, '../src'), // 只处理src目录下，  include和exclude只能存在一个
                 use: {
                   loader: 'babel-loader',
-                  // 配置可以写在babel.config.js里
-                  // options: {
-                  //   presets: ['@babel/preset-env']
-                  // }
+                  options: {
+                    // presets: ['@babel/preset-env']
+                    cacheDirectory: true, // 开启babel缓存
+                    cacheCompression: false // 关闭缓存的压缩
+                  }
                 }
               }
         ]
@@ -107,7 +109,10 @@ module.exports = {
     plugins: [
       new ESLintPlugin({
         // eslint检测的范围
-        context: path.resolve(__dirname, '../src')
+        context: path.resolve(__dirname, '../src'),
+        exclude: 'node_modules',
+        cache: true, // 开启缓存
+        cacheLocation: path.resolve(__dirname, '../node_modules/.cache/eslintcache') // 配置缓存的目录
       }),
       // build时，用这个template进行build
       new HtmlWebpackPlugin({
