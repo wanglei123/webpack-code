@@ -2,8 +2,8 @@
     display: flex;
     transform: rotate(25);
     border-radius: 50px;
-    width:100px;
-    height: 100px;
+    width:200px;
+    height: 200px;
     background-color: aqua;
     background-image: url('../images/123.png');
 }
