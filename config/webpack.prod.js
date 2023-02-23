@@ -2,8 +2,8 @@
  * @Author       : wanglei
  * @Date         : 2023-02-13 08:40:52
  * @LastEditors  : wanglei
- * @LastEditTime : 2023-02-18 22:12:12
- * @FilePath     : /webpack-code/webpack.config.js
+ * @LastEditTime : 2023-02-23 08:56:24
+ * @FilePath     : /webpack-code/config/webpack.prod.js
  * @description  : 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
  */
 const path = require('path')
@@ -47,7 +47,9 @@ module.exports = {
     // 安装postcss npm install postcss-loader postcss postcss-preset-env -D
     module: {
         rules: [
-            {
+          {
+            oneOf: [
+              {
                 test: /\.css$/, // 检测.css文件
                 // use的执行顺序，是从右到左，或者从下到上。
                 use: getStyleLoader()
@@ -105,6 +107,8 @@ module.exports = {
                   // }
                 }
               }
+            ]
+          }
         ]
     },
     plugins: [
@@ -124,5 +128,6 @@ module.exports = {
     ],
 
     mode: 'production',
+    devtool: 'source-map'
 
 }
