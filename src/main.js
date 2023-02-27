@@ -2,7 +2,7 @@
  * @Author       : wanglei
  * @Date         : 2023-02-18 22:11:24
  * @LastEditors  : wanglei
- * @LastEditTime : 2023-02-27 17:07:39
+ * @LastEditTime : 2023-02-27 22:16:15
  * @FilePath     : /webpack-code/src/main.js
  * @description  : 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
  */
@@ -27,3 +27,9 @@ document.getElementById('btn').onclick = function(){
     console.log(2222)
   })
 }
+
+new Promise((resolve) => {
+  setTimeout(() => {
+    resolve()
+  }, 1000)
+})

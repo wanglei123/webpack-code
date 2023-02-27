@@ -2,7 +2,7 @@
  * @Author       : wanglei
  * @Date         : 2023-02-13 08:40:52
  * @LastEditors  : wanglei
- * @LastEditTime : 2023-02-27 21:19:09
+ * @LastEditTime : 2023-02-27 21:49:24
  * @FilePath     : /webpack-code/config/webpack.prod.js
  * @description  : 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
  */
@@ -45,8 +45,8 @@ module.exports = {
     output: {
         // path nodejs变量，代表当前文件的文件夹目录
         path: path.resolve(__dirname, '../dist'), // 所有文件的打包目录
-        filename: 'static/js/[name].js', // 打包之后的文件名，入口文件打包输出的文件名
-        chunkFilename: 'static/js/[name].chunk.js', // chunk的命名
+        filename: 'static/js/[name].[hash:10].js', // 打包之后的文件名，入口文件打包输出的文件名
+        chunkFilename: 'static/js/[name].chunk.[hash:10].js', // chunk的命名
         assetModuleFilename: 'static/images/[hash:10][ext][query]', // 图片、字体等通过type: asset处理的静态资源命名
         clean: true // 每次打包前，清空打包目录，将path目录清空
     },
@@ -140,8 +140,8 @@ module.exports = {
         template: path.resolve(__dirname, '../public/index.html')
       }),
       new MiniCssExtractPlugin({
-        filename: 'static/css/[name].css',
-        chunkFilename: 'static/css/[name].chunk.css'
+        filename: 'static/css/[name].[contenthash:10].css',
+        chunkFilename: 'static/css/[name].[contenthash:10].chunk.css'
       }),
 
     ],
@@ -157,6 +157,9 @@ module.exports = {
       // 配置代码分割
       splitChunks: {
         chunks: 'all'
+      },
+      runtimeChunk: {
+        name: (entrypoint) => `runtime-${entrypoint.name}.js`
       }
       
     },
