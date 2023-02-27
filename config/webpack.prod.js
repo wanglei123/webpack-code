@@ -2,7 +2,7 @@
  * @Author       : wanglei
  * @Date         : 2023-02-13 08:40:52
  * @LastEditors  : wanglei
- * @LastEditTime : 2023-02-23 08:56:24
+ * @LastEditTime : 2023-02-27 17:15:28
  * @FilePath     : /webpack-code/config/webpack.prod.js
  * @description  : 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
  */
@@ -46,6 +46,7 @@ module.exports = {
         // path nodejs变量，代表当前文件的文件夹目录
         path: path.resolve(__dirname, '../dist'), // 所有文件的打包目录
         filename: 'static/js/my-first-bundle.js', // 打包之后的文件名，入口文件打包输出的文件名
+        chunkFilename: 'static/js/[name].js',
         clean: true // 每次打包前，清空打包目录，将path目录清空
     },
     // 安装postcss npm install postcss-loader postcss postcss-preset-env -D
@@ -146,11 +147,15 @@ module.exports = {
       // 压缩操作
       minimizer: [
       // 压缩css
-      new CssMinimizerPlugin(),
-      new TerserWebpackPlugin({
-        parallel: threads // // 开启多进程的数量
-      })
+        new CssMinimizerPlugin(),
+        new TerserWebpackPlugin({
+          parallel: threads // // 开启多进程的数量
+        })
       ],
+      // 配置代码分割
+      splitChunks: {
+        chunks: 'all'
+      }
       
     },
 
