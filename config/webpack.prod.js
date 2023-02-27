@@ -2,7 +2,7 @@
  * @Author       : wanglei
  * @Date         : 2023-02-13 08:40:52
  * @LastEditors  : wanglei
- * @LastEditTime : 2023-02-27 17:15:28
+ * @LastEditTime : 2023-02-27 21:19:09
  * @FilePath     : /webpack-code/config/webpack.prod.js
  * @description  : 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
  */
@@ -45,8 +45,9 @@ module.exports = {
     output: {
         // path nodejs变量，代表当前文件的文件夹目录
         path: path.resolve(__dirname, '../dist'), // 所有文件的打包目录
-        filename: 'static/js/my-first-bundle.js', // 打包之后的文件名，入口文件打包输出的文件名
-        chunkFilename: 'static/js/[name].js',
+        filename: 'static/js/[name].js', // 打包之后的文件名，入口文件打包输出的文件名
+        chunkFilename: 'static/js/[name].chunk.js', // chunk的命名
+        assetModuleFilename: 'static/images/[hash:10][ext][query]', // 图片、字体等通过type: asset处理的静态资源命名
         clean: true // 每次打包前，清空打包目录，将path目录清空
     },
     // 安装postcss npm install postcss-loader postcss postcss-preset-env -D
@@ -88,18 +89,18 @@ module.exports = {
                  }
                },
                // 图片路径输出的目录
-               generator: {
-                // [hash:10] hash值只取前10位
-                filename: 'static/images/[hash:10][ext][query]'
-              }
+              //  generator: {
+              //   // [hash:10] hash值只取前10位
+              //   filename: 'static/images/[hash:10][ext][query]'
+              // }
               },
               // 处理字体资源，也可以处理其它音频、视频资源
               {
                 test: /\.(ttf|woff2?|map3|map4|avi)$/,
                 type: "asset/resource", // 文件不会转base64
-                generator: {
-                  filename: 'static/fonts/[hash:10][ext][query]'
-                }
+                // generator: {
+                //   filename: 'static/fonts/[hash:10][ext][query]'
+                // }
               },
               {
                 test: /\.js$/,
@@ -139,7 +140,8 @@ module.exports = {
         template: path.resolve(__dirname, '../public/index.html')
       }),
       new MiniCssExtractPlugin({
-        filename: 'static/css/main.css'
+        filename: 'static/css/[name].css',
+        chunkFilename: 'static/css/[name].chunk.css'
       }),
 
     ],

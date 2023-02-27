@@ -2,7 +2,7 @@
  * @Author       : wanglei
  * @Date         : 2023-02-13 08:40:52
  * @LastEditors  : wanglei
- * @LastEditTime : 2023-02-23 08:52:34
+ * @LastEditTime : 2023-02-27 21:20:32
  * @FilePath     : /webpack-code/config/webpack.dev.js
  * @description  : 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
  */
@@ -15,19 +15,20 @@ const TerserWebpackPlugin = require('terser-webpack-plugin')
 
 const threads = os.cpus().length // 先判断当前电脑cpu的核数， 我们能启动的最大进程数据就是cpu的核数
 
-
 module.exports = {
 	entry: './src/main.js', // 这个不用改，还是会从要从根目录去找入口文件
 	output: {
 		// path nodejs变量，代表当前文件的文件夹目录
 		path: undefined, // 所有文件的打包目录，这个放到config文件夹中之后，需要加上../, 开发环境可以不用定义
 		filename: 'static/js/my-first-bundle.js', // 打包之后的文件名，入口文件打包输出的文件名
+		chunkFilename: 'static/js/[name].chunk.js', // chunk的命名
+		assetModuleFilename: 'static/images/[hash:10][ext][query]', // 图片、字体等通过type: asset处理的静态资源命名
 		// clean: true // 每次打包前，清空打包目录，将path目录清空
 	},
 	module: {
 		rules: [
 			{
-        // 加上oneOf,如果找到这个loader就不再继续向下寻找，提高效率，生产和开发模式都可以使用。
+				// 加上oneOf,如果找到这个loader就不再继续向下寻找，提高效率，生产和开发模式都可以使用。
 				oneOf: [
 					{
 						test: /\.css$/, // 检测.css文件
@@ -81,43 +82,43 @@ module.exports = {
 							},
 						},
 						// 图片路径输出的目录
-						generator: {
-							// [hash:10] hash值只取前10位
-							filename: 'static/images/[hash:10][ext][query]',
-						},
+						// generator: {
+						// 	// [hash:10] hash值只取前10位
+						// 	filename: 'static/images/[hash:10][ext][query]',
+						// },
 					},
 					// 处理字体资源，也可以处理其它音频、视频资源
 					{
 						test: /\.(ttf|woff2?|map3|map4|avi)$/,
 						type: 'asset/resource', // 文件不会转base64
-						generator: {
-							filename: 'static/fonts/[hash:10][ext][query]',
-						},
+						// generator: {
+						// 	filename: 'static/fonts/[hash:10][ext][query]',
+						// },
 					},
 					{
 						test: /\.js$/,
 						exclude: /node_modules/, // 排除node_modules 文件夹
 						use: [
-              {
-                loader: 'thread-loader', // 开启多进程
-                options: {
-                  workds: threads // 进程数量
-                }
-              },
-              {
-                loader: 'babel-loader',
-                // 配置可以写在babel.config.js里
-                // options: {
-                //   presets: ['@babel/preset-env']
-                // }
-                options: {
-                  // presets: ['@babel/preset-env']
-                  cacheDirectory: true, // 开启babel缓存
-                  cacheCompression: false, // 关闭缓存的压缩
-                  plugins: ['@babel/plugin-transform-runtime'] // 减少代码体积
-                }
-              },
-            ]
+							{
+								loader: 'thread-loader', // 开启多进程
+								options: {
+									workds: threads, // 进程数量
+								},
+							},
+							{
+								loader: 'babel-loader',
+								// 配置可以写在babel.config.js里
+								// options: {
+								//   presets: ['@babel/preset-env']
+								// }
+								options: {
+									// presets: ['@babel/preset-env']
+									cacheDirectory: true, // 开启babel缓存
+									cacheCompression: false, // 关闭缓存的压缩
+									plugins: ['@babel/plugin-transform-runtime'], // 减少代码体积
+								},
+							},
+						],
 					},
 				],
 			},
@@ -127,16 +128,17 @@ module.exports = {
 		new ESLintPlugin({
 			// eslint检测的范围
 			context: path.resolve(__dirname, '../src'),
-      cache: true, // 开启缓存
-      cacheLocation: path.resolve(__dirname, '../node_modules/.cache/eslintcache'),// 配置缓存的目录
-      threads
+			cache: true, // 开启缓存
+			cacheLocation: path.resolve(__dirname, '../node_modules/.cache/eslintcache'), // 配置缓存的目录
+			threads,
 		}),
 		// build时，用这个template进行build
 		new HtmlWebpackPlugin({
 			template: path.resolve(__dirname, '../public/index.html'),
 		}),
 		new MiniCssExtractPlugin({
-			filename: 'static/css/main.css',
+			filename: 'static/css/[name].css',
+			chunkFilename: 'static/css/[name].chunk.css',
 		}),
 	],
 	// 开发服务器没有任何输出资源，是在内存中编译打包的
